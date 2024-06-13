@@ -1,0 +1,30 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+
+    "configurations": [
+    {
+        "cwd": "${workspaceRoot}",
+        "executable": "${workspaceRoot}/build/Generated.elf",
+        "name": "STlink Debug",
+        "request": "launch",
+        "type": "cortex-debug",
+        "device": "STM32F103C8T6",
+        "interface": "swd",
+        "svdFile": "C:/ST/STM32CubeIDE_1.15.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.productdb.debug_2.1.200.202403061128/resources/cmsis/STMicroelectronics_CMSIS_SVD/STM32F103.svd",
+        "servertype": "openocd",
+        "configFiles": ["C:/Program Files (x86)/OpenOCD-20231002-0.12.0/share/openocd/scripts/interface/stlink.cfg",
+                        "C:/Program Files (x86)/OpenOCD-20231002-0.12.0/share/openocd/scripts/target/stm32f1x.cfg",
+        ],
+        
+        "searchDir": ["C:/OpenOCD/scripts"],
+        "runToEntryPoint": "main",
+        "showDevDebugOutput": "none"
+    }
+    ],
+
+
+
+}
