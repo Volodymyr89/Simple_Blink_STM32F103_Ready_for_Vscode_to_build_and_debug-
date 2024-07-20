@@ -2,11 +2,20 @@
 #define _128_32_OLED_
 
 #include "stdint.h"
-#include "stm32f1xx_ll_i2c.h"
+#include "stdlib.h"
+#include "stm32f1xx_hal.h"
 
- // Address definition
-  // ------------------------------------------------------------------------------------
-  #define SSD1306_ADDR              (uint8_t)0x3C
+#define INIT_ARRAY_SIZE      (sizeof(&init_ssd1306)/sizeof(init_ssd1306[0]))
+#define MAX_X                (uint8_t)127
+#define MAX_Y                (uint8_t)31
+#define MEM_SIZE             (uint16_t)512
+#define OLED_I2C_ADDRESS     (uint8_t)(0x3C<<1)
+
+extern uint8_t oled_buffer_array[MEM_SIZE];
+extern uint8_t init_ssd1306[];
+extern I2C_HandleTypeDef hi2c1;
+extern DMA_HandleTypeDef hdma_i2c1_tx;
+
 
   // Command definition
   // ------------------------------------------------------------------------------------
@@ -50,10 +59,13 @@
   #define SSD1306_NOP               (uint8_t)0xE3  // No operation
   #define SSD1306_RESET             (uint8_t)0xE4  // Maybe SW RESET, @source https://github.com/SmingHub/Sming/issues/501
 
-#define INIT_ARRAY_SIZE      (sizeof(INIT_SSD1306[])/sizeof(INIT_SSD1306[0]))
+typedef enum status{
+   SSD1306_OK,
+   SSD1306_ERROR
+}oled_status;
 
-extern const uint8_t INIT_SSD1306[];
 
-void oled_128x32_init(I2C_TypeDef *I2Cx, uint8_t data);
-
+oled_status oled_128x32_init(uint8_t *data, uint16_t size);
+oled_status oled_128x32_set_pixel(uint8_t x, uint8_t y);
+oled_status oled_128x32_update(uint8_t *data);
 #endif

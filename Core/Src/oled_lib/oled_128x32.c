@@ -1,7 +1,13 @@
 #include "oled_lib/oled_128x32.h"
 
-const uint8_t INIT_SSD1306[] = {        
-  SSD1306_ADDR,                                                   // send address    
+I2C_HandleTypeDef hi2c1;
+DMA_HandleTypeDef hdma_i2c1_tx;
+
+// @var array Chache memory Lcd 4 * 128 = 512
+uint8_t oled_buffer_array[MEM_SIZE];
+static uint32_t index =0;
+
+uint8_t init_ssd1306[] = {         
   SSD1306_COMMAND,                                                 // send command
   SSD1306_DISPLAY_OFF,                                            // 0xAE = Set Display OFF
 
@@ -39,8 +45,35 @@ const uint8_t INIT_SSD1306[] = {
   SSD1306_DISPLAY_ON,                                             // 0xAF = Set Display ON
 };
 
-void oled_128x32_init(I2C_TypeDef *I2Cx, uint8_t data){
 
-    LL_I2C_GenerateStartCondition(I2C1);
-    LL_I2C_TransmitData8(I2C1, data);
+oled_status I2C_DMA_Transmit(uint8_t *data_ptr, uint16_t size) {
+    if (HAL_I2C_Master_Transmit_DMA(&hi2c1, OLED_I2C_ADDRESS, data_ptr, size) == HAL_OK){
+        return SSD1306_OK;
+    }
+        return SSD1306_ERROR;
+}
+
+oled_status oled_128x32_init(uint8_t *data, uint16_t size){
+
+    return I2C_DMA_Transmit(data, size);
+}
+
+oled_status oled_128x32_update(uint8_t *data){
+     return I2C_DMA_Transmit(data, MEM_SIZE);
+}
+
+oled_status oled_128x32_set_pixel(uint8_t x, uint8_t y){
+
+  uint8_t page = 0;
+  uint8_t pixel = 0;
+  
+  if ((x > MAX_X) || (y > MAX_Y)) {                               // if out of range
+    return SSD1306_ERROR;                                         // out of range
+  }
+  page = y >> 3;                                                  // find page (y / 8)
+  pixel = 1 << (y - (page << 3));                                 // which pixel (y % 8)
+  index = x + (page << 7);                                        // update counter
+  oled_buffer_array[index++] |= pixel;                            // save pixel
+
+   return SSD1306_OK;
 }
