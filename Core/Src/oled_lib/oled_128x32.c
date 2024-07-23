@@ -4,7 +4,7 @@ I2C_HandleTypeDef hi2c1;
 DMA_HandleTypeDef hdma_i2c1_tx;
 
 // @var array Chache memory Lcd 4 * 128 = 512
-uint8_t oled_buffer_array[MEM_SIZE];
+uint8_t oled_buffer_array[MEM_SIZE] = {SSD1306_DATA_STREAM};
 static uint32_t index =0;
 
 uint8_t init_ssd1306[] = {         

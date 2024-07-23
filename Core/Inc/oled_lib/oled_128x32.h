@@ -8,7 +8,7 @@
 #define INIT_ARRAY_SIZE      (sizeof(&init_ssd1306)/sizeof(init_ssd1306[0]))
 #define MAX_X                (uint8_t)127
 #define MAX_Y                (uint8_t)31
-#define MEM_SIZE             (uint16_t)512
+#define MEM_SIZE             (uint16_t)513
 #define OLED_I2C_ADDRESS     (uint8_t)(0x3C<<1)
 
 extern uint8_t oled_buffer_array[MEM_SIZE];
@@ -68,4 +68,5 @@ typedef enum status{
 oled_status oled_128x32_init(uint8_t *data, uint16_t size);
 oled_status oled_128x32_set_pixel(uint8_t x, uint8_t y);
 oled_status oled_128x32_update(uint8_t *data);
+oled_status I2C_DMA_Transmit(uint8_t *data_ptr, uint16_t size);
 #endif

@@ -20,7 +20,6 @@
 #include "main.h"
 #include "oled_lib/oled_128x32.h"
 
-
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
@@ -51,9 +50,9 @@ int main(void)
   MX_DMA_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-  oled_128x32_init(init_ssd1306, INIT_ARRAY_SIZE);
-  oled_128x32_set_pixel(10, 5);
-  HAL_Delay(100);
+  oled_128x32_init(init_ssd1306, 27);
+  HAL_Delay(5);
+  oled_128x32_set_pixel(10, 10);
   oled_128x32_update(oled_buffer_array);
 
   while (1)
