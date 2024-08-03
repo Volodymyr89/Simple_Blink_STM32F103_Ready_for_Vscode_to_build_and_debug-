@@ -15,6 +15,7 @@ extern uint8_t oled_buffer_array[MEM_SIZE];
 extern uint8_t init_ssd1306[];
 extern I2C_HandleTypeDef hi2c1;
 extern DMA_HandleTypeDef hdma_i2c1_tx;
+extern uint8_t init_oled_array;
 
 
   // Command definition

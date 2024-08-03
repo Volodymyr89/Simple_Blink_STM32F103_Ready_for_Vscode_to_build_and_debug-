@@ -45,6 +45,7 @@ uint8_t init_ssd1306[] = {
   SSD1306_DISPLAY_ON,                                             // 0xAF = Set Display ON
 };
 
+uint8_t init_oled_array = (sizeof(init_ssd1306)/sizeof(init_ssd1306[0]));
 
 oled_status I2C_DMA_Transmit(uint8_t *data_ptr, uint16_t size) {
     if (HAL_I2C_Master_Transmit_DMA(&hi2c1, OLED_I2C_ADDRESS, data_ptr, size) == HAL_OK){
