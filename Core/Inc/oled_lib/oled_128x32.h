@@ -5,7 +5,6 @@
 #include "stdlib.h"
 #include "stm32f1xx_hal.h"
 
-#define INIT_ARRAY_SIZE      (sizeof(&init_ssd1306)/sizeof(init_ssd1306[0]))
 #define MAX_X                (uint8_t)127
 #define MAX_Y                (uint8_t)31
 #define MEM_SIZE             (uint16_t)513
@@ -24,7 +23,6 @@ extern uint8_t init_oled_array;
   #define SSD1306_COMMAND_STREAM    (uint8_t)0x00  // Continuation bit=0, D/C=0; 0000 0000
   #define SSD1306_DATA              (uint8_t)0xC0  // Continuation bit=1, D/C=1; 1100 0000
   #define SSD1306_DATA_STREAM       (uint8_t)0x40  // Continuation bit=0, D/C=1; 0100 0000
-
   #define SSD1306_SET_MUX_RATIO     (uint8_t)0xA8  // Set MUX ratio to N+1 MUX, N=A[5:0] : from 16MUX to 64MUX
   #define SSD1306_DISPLAY_OFFSET    (uint8_t)0xD3  // Set Display Offset
   #define SSD1306_DISPLAY_ON        (uint8_t)0xAF  // Display ON in normal mode

@@ -1,5 +1,7 @@
 #include "oled_lib/oled_128x32.h"
 
+#define OLED_128X32
+
 I2C_HandleTypeDef hi2c1;
 DMA_HandleTypeDef hdma_i2c1_tx;
 
@@ -8,12 +10,13 @@ uint8_t oled_buffer_array[MEM_SIZE] = {SSD1306_DATA_STREAM};
 static uint32_t index =0;
 
 uint8_t init_ssd1306[] = {         
-  SSD1306_COMMAND,                                                 // send command
+  0x00,
   SSD1306_DISPLAY_OFF,                                            // 0xAE = Set Display OFF
+  SSD1306_COMMAND,                                                 // send command
 
   SSD1306_SET_MUX_RATIO,
-  0x1F,                                                           // 0xA8 - 0x3F for 128 x 64 version (64MUX)
-                                                                  //      - 0x1F for 128 x 32 version (32MUX)
+   0x1F,                                                           // 0xA8 - 0x3F for 128 x 64 version (64MUX)  
+                                                                  //  - 0x1F for 128 x 32 version (32MUX)
   SSD1306_MEMORY_ADDR_MODE,
   0x00,                                                           // 0x20 = Set Memory Addressing Mode
                                                                   // 0x00 - Horizontal Addressing Mode
@@ -29,7 +32,7 @@ uint8_t init_ssd1306[] = {
                                                                   // 0x12 - for 128 x 64 version
                                                                   // 0x02 - for 128 x 32 version
   SSD1306_SET_CONTRAST,
-  0x7F,                                                           // 0x81, 0x7F - reset value (max 0xFF)
+  0xF0,                                                           // 0x81, 0x7F - reset value (max 0xFF)
   SSD1306_DIS_ENT_DISP_ON,                                        // 0xA4
   SSD1306_DIS_NORMAL,                                             // 0xA6
   SSD1306_SET_OSC_FREQ,
@@ -42,21 +45,40 @@ uint8_t init_ssd1306[] = {
   SSD1306_SET_CHAR_REG,
   0x14,                                                           // 0x8D, Enable charge pump during display on
   SSD1306_DEACT_SCROLL,                                           // 0x2E
+  0xA4,                                                           //follow RAM content A5 set entire display ON
   SSD1306_DISPLAY_ON,                                             // 0xAF = Set Display ON
 };
+
+
 
 uint8_t init_oled_array = (sizeof(init_ssd1306)/sizeof(init_ssd1306[0]));
 
 oled_status I2C_DMA_Transmit(uint8_t *data_ptr, uint16_t size) {
-    if (HAL_I2C_Master_Transmit_DMA(&hi2c1, OLED_I2C_ADDRESS, data_ptr, size) == HAL_OK){
-        return SSD1306_OK;
-    }
-        return SSD1306_ERROR;
+   uint8_t return_status = 0;
+
+   while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY){}
+   if (HAL_I2C_Master_Transmit_DMA(&hi2c1, OLED_I2C_ADDRESS, data_ptr, size) == HAL_OK){
+      return_status = SSD1306_OK;
+   }
+   else{
+      return_status = SSD1306_ERROR;
+   }
+
+   return return_status;
 }
-
 oled_status oled_128x32_init(uint8_t *data, uint16_t size){
+   uint8_t return_status = 0;
 
-    return I2C_DMA_Transmit(data, size);
+   while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY){}
+   if (HAL_I2C_Master_Transmit_DMA(&hi2c1, OLED_I2C_ADDRESS, data, size) == HAL_OK){
+      return_status = SSD1306_OK;
+   }
+   else{
+      return_status = SSD1306_ERROR;
+   }
+
+   return return_status;
+  
 }
 
 oled_status oled_128x32_update(uint8_t *data){
@@ -73,7 +95,7 @@ oled_status oled_128x32_set_pixel(uint8_t x, uint8_t y){
   }
   page = y >> 3;                                                  // find page (y / 8)
   pixel = 1 << (y - (page << 3));                                 // which pixel (y % 8)
-  index = x + (page << 7);                                        // update counter
+  index = x + (page << 7) + 1;                                        // update counter
   oled_buffer_array[index++] |= pixel;                            // save pixel
 
    return SSD1306_OK;

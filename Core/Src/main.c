@@ -43,8 +43,7 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   oled_128x32_init(init_ssd1306, init_oled_array);
-  HAL_Delay(5);
-  oled_128x32_set_pixel(10, 10);
+  oled_128x32_set_pixel(0, 0);
   oled_128x32_update(oled_buffer_array);
 
   while (1)
