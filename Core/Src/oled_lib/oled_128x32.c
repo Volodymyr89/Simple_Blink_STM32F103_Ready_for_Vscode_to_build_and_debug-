@@ -1,4 +1,5 @@
 #include "oled_lib/oled_128x32.h"
+#include "oled_lib/font.h"
 
 #define OLED_128X32
 
@@ -7,7 +8,8 @@ DMA_HandleTypeDef hdma_i2c1_tx;
 
 // @var array Chache memory Lcd 4 * 128 = 512
 uint8_t oled_buffer_array[MEM_SIZE] = {SSD1306_DATA_STREAM};
-static uint32_t index =0;
+uint8_t _counter = 0;
+
 
 uint8_t init_ssd1306[] = {         
   0x00,
@@ -50,6 +52,7 @@ uint8_t init_ssd1306[] = {
 };
 
 
+oled_128x32_possition_t oled_128x32_possition = {0, 0};
 
 uint8_t init_oled_array = (sizeof(init_ssd1306)/sizeof(init_ssd1306[0]));
 
@@ -66,8 +69,8 @@ oled_status I2C_DMA_Transmit(uint8_t *data_ptr, uint16_t size) {
 
    return return_status;
 }
-oled_status oled_128x32_init(uint8_t *data, uint16_t size){
-   uint8_t return_status = 0;
+oled_status oled_128x32_Init(uint8_t *data, uint16_t size){
+   uint8_t return_status = SSD1306_UNDEFINED;
 
    while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY){}
    if (HAL_I2C_Master_Transmit_DMA(&hi2c1, OLED_I2C_ADDRESS, data, size) == HAL_OK){
@@ -81,22 +84,84 @@ oled_status oled_128x32_init(uint8_t *data, uint16_t size){
   
 }
 
-oled_status oled_128x32_update(uint8_t *data){
+oled_status oled_128x32_Update(uint8_t *data){
      return I2C_DMA_Transmit(data, MEM_SIZE);
 }
 
-oled_status oled_128x32_set_pixel(uint8_t x, uint8_t y){
+oled_status oled_128x32_Set_Position(oled_128x32_possition_t *position, uint8_t posx, uint8_t posy){
+   uint8_t status = SSD1306_UNDEFINED;
+
+   if ((posx > MAX_X) || (posy > MAX_Y)) {                               // if out of range
+      return status = SSD1306_ERROR;                                         // out of range
+   }
+   else{
+      position->x = posx;
+      position->y = posy;
+      status = SSD1306_OK;   
+   }
+
+   return status;
+}
+
+oled_status oled_128x32_Set_Pixel(uint8_t x, uint8_t y){
 
   uint8_t page = 0;
   uint8_t pixel = 0;
-  
-  if ((x > MAX_X) || (y > MAX_Y)) {                               // if out of range
-    return SSD1306_ERROR;                                         // out of range
-  }
+  static uint32_t index =0;
+  oled_128x32_Set_Position(&oled_128x32_possition, x, y);
   page = y >> 3;                                                  // find page (y / 8)
   pixel = 1 << (y - (page << 3));                                 // which pixel (y % 8)
   index = x + (page << 7) + 1;                                        // update counter
   oled_buffer_array[index++] |= pixel;                            // save pixel
 
    return SSD1306_OK;
+}
+
+oled_status oled_128x32_Clear(void){
+   uint8_t status = SSD1306_UNDEFINED;
+   memset((uint8_t *)oled_buffer_array, 0x00, MEM_SIZE);
+   status = SSD1306_OK;
+
+   return status;
+}
+
+inline uint8_t read_byte(const uint8_t* font_array_ptr){
+   uint8_t byte_to_return = '\0';
+
+   byte_to_return = *font_array_ptr;
+
+   return byte_to_return;
+
+}
+
+
+inline oled_status oled_128x32_DrawChar(char character){
+  uint8_t status = SSD1306_UNDEFINED;
+  uint8_t columns_number = 0;
+  static uint16_t array_position = 1;
+
+    // Check if character is valid
+    if (character < 32 || character > 126){
+        status = SSD1306_ERROR;
+    }
+    else
+    {
+      while(columns_number < CHARS_COLS_LENGTH){
+         oled_buffer_array[array_position] = read_byte(&FONTS[character - 32][columns_number]);
+         columns_number++;
+         array_position++;
+
+      }
+      status = SSD1306_OK;
+    }
+
+   return status;
+}
+
+void oled_128x32_DrawString (char *str)
+{
+  uint32_t i = 0;
+  while (str[i] != '\0') {
+    oled_128x32_DrawChar (str[i++]);
+  }
 }

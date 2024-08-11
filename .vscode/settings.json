@@ -6,6 +6,7 @@
         "stm32f1xx_ll_i2c.h": "c",
         "main.h": "c",
         "oled_128x32.h": "c",
-        "stm32f1xx_hal.h": "c"
+        "stm32f1xx_hal.h": "c",
+        "font.h": "c"
     },
 }

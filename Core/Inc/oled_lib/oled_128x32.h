@@ -4,17 +4,12 @@
 #include "stdint.h"
 #include "stdlib.h"
 #include "stm32f1xx_hal.h"
+#include <string.h> 
 
 #define MAX_X                (uint8_t)127
 #define MAX_Y                (uint8_t)31
 #define MEM_SIZE             (uint16_t)513
 #define OLED_I2C_ADDRESS     (uint8_t)(0x3C<<1)
-
-extern uint8_t oled_buffer_array[MEM_SIZE];
-extern uint8_t init_ssd1306[];
-extern I2C_HandleTypeDef hi2c1;
-extern DMA_HandleTypeDef hdma_i2c1_tx;
-extern uint8_t init_oled_array;
 
 
   // Command definition
@@ -59,13 +54,29 @@ extern uint8_t init_oled_array;
   #define SSD1306_RESET             (uint8_t)0xE4  // Maybe SW RESET, @source https://github.com/SmingHub/Sming/issues/501
 
 typedef enum status{
+  SSD1306_UNDEFINED,
    SSD1306_OK,
    SSD1306_ERROR
 }oled_status;
 
 
-oled_status oled_128x32_init(uint8_t *data, uint16_t size);
-oled_status oled_128x32_set_pixel(uint8_t x, uint8_t y);
-oled_status oled_128x32_update(uint8_t *data);
+typedef struct position{
+   uint8_t x;
+   uint8_t y;
+}oled_128x32_possition_t;
+
+extern uint8_t oled_buffer_array[MEM_SIZE];
+extern uint8_t init_ssd1306[];
+extern I2C_HandleTypeDef hi2c1;
+extern DMA_HandleTypeDef hdma_i2c1_tx;
+extern uint8_t init_oled_array;
+extern oled_128x32_possition_t oled_128x32_possition;
+
+oled_status oled_128x32_Init(uint8_t *data, uint16_t size);
+oled_status oled_128x32_Set_Pixel(uint8_t x, uint8_t y);
+oled_status oled_128x32_Update(uint8_t *data);
+oled_status oled_128x32_DrawChar(char character);
+oled_status oled_128x32_Set_Position(oled_128x32_possition_t *position, uint8_t posx, uint8_t posy);
+void oled_128x32_DrawString (char *str);
 oled_status I2C_DMA_Transmit(uint8_t *data_ptr, uint16_t size);
 #endif

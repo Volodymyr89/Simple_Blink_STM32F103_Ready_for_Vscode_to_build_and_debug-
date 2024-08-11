@@ -41,10 +41,13 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_I2C1_Init();
-  /* USER CODE BEGIN 2 */
-  oled_128x32_init(init_ssd1306, init_oled_array);
-  oled_128x32_set_pixel(0, 0);
-  oled_128x32_update(oled_buffer_array);
+  
+  
+  oled_128x32_Init(init_ssd1306, init_oled_array);
+  oled_128x32_Set_Pixel(0, 0);
+  oled_128x32_Set_Position(&oled_128x32_possition, 0, 0);
+  oled_128x32_DrawString("Heeeyyyyyyyyyyyyyyyyyyyyy it is Working !!!");
+  oled_128x32_Update(oled_buffer_array);
 
   while (1)
   {
