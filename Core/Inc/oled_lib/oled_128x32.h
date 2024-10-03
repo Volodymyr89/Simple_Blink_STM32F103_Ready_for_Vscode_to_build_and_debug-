@@ -65,6 +65,12 @@ typedef struct position{
    uint8_t y;
 }oled_128x32_possition_t;
 
+typedef enum fonts{
+   FONT_5x8_ = (uint8_t)0,
+   FONT_6x8_,
+   FONT_8x8_
+}fonts_t;
+
 extern uint8_t oled_buffer_array[MEM_SIZE];
 extern uint8_t init_ssd1306[];
 extern I2C_HandleTypeDef hi2c1;
@@ -75,8 +81,8 @@ extern oled_128x32_possition_t oled_128x32_possition;
 oled_status oled_128x32_Init(uint8_t *data, uint16_t size);
 oled_status oled_128x32_Set_Pixel(uint8_t x, uint8_t y);
 oled_status oled_128x32_Update(uint8_t *data);
-oled_status oled_128x32_DrawChar(char character);
+oled_status oled_128x32_DrawChar(char character, uint8_t fonts);
 oled_status oled_128x32_Set_Position(oled_128x32_possition_t *position, uint8_t posx, uint8_t posy);
-void oled_128x32_DrawString (char *str);
+void oled_128x32_DrawString (char *str, uint8_t fonts);
 oled_status I2C_DMA_Transmit(uint8_t *data_ptr, uint16_t size);
 #endif

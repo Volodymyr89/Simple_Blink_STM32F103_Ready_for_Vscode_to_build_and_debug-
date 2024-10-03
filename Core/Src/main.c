@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "oled_lib/oled_128x32.h"
+#include "oled_lib/font.h"
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
@@ -46,7 +47,7 @@ int main(void)
   oled_128x32_Init(init_ssd1306, init_oled_array);
   oled_128x32_Set_Pixel(0, 0);
   oled_128x32_Set_Position(&oled_128x32_possition, 0, 0);
-  oled_128x32_DrawString("Heeeyyyyyyyyyyyyyyyyyyyyy it is Working !!!");
+  oled_128x32_DrawString("Working !!!", FONT_6x8_);
   oled_128x32_Update(oled_buffer_array);
 
   while (1)

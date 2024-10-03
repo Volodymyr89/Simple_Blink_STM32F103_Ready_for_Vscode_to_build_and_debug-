@@ -125,20 +125,19 @@ oled_status oled_128x32_Clear(void){
    return status;
 }
 
-inline uint8_t read_byte(const uint8_t* font_array_ptr){
-   uint8_t byte_to_return = '\0';
-
-   byte_to_return = *font_array_ptr;
-
-   return byte_to_return;
-
-}
+// inline uint8_t read_byte(const uint8_t* font_array_ptr){
+//    uint8_t byte_to_return = '\0';
+//    byte_to_return = *font_array_ptr;
+//    return byte_to_return;
+// }
 
 
-inline oled_status oled_128x32_DrawChar(char character){
+inline oled_status oled_128x32_DrawChar(char character, uint8_t fonts){
   uint8_t status = SSD1306_UNDEFINED;
   uint8_t columns_number = 0;
+  uint8_t char_cols_lenth = 0;
   static uint16_t array_position = 1;
+  uint8_t *chose_font = NULL;
 
     // Check if character is valid
     if (character < 32 || character > 126){
@@ -146,11 +145,23 @@ inline oled_status oled_128x32_DrawChar(char character){
     }
     else
     {
-      while(columns_number < CHARS_COLS_LENGTH){
-         oled_buffer_array[array_position] = read_byte(&FONTS[character - 32][columns_number]);
+      switch (fonts)
+       {
+       case FONT_5x8_:
+             char_cols_lenth = CHARS_COLS_LENGTH_5x8;
+             chose_font = &FONT_5x8[character - 32][columns_number];
+          break;
+       case FONT_6x8_:
+             char_cols_lenth = CHARS_COLS_LENGTH_6x8;
+             chose_font = &FONT_6x8[character - 32][columns_number];
+          break;
+         default:
+         break;
+      }
+      while(columns_number < char_cols_lenth){
+         oled_buffer_array[array_position] = chose_font[columns_number];
          columns_number++;
          array_position++;
-
       }
       status = SSD1306_OK;
     }
@@ -158,10 +169,10 @@ inline oled_status oled_128x32_DrawChar(char character){
    return status;
 }
 
-void oled_128x32_DrawString (char *str)
+void oled_128x32_DrawString (char *str, uint8_t fonts)
 {
   uint32_t i = 0;
   while (str[i] != '\0') {
-    oled_128x32_DrawChar (str[i++]);
+    oled_128x32_DrawChar (str[i++], fonts);
   }
 }
