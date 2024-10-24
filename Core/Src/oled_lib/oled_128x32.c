@@ -137,7 +137,7 @@ inline oled_status oled_128x32_DrawChar(char character, uint8_t fonts){
   uint8_t columns_number = 0;
   uint8_t char_cols_lenth = 0;
   static uint16_t array_position = 1;
-  uint8_t *chose_font = NULL;
+  uint8_t const *chose_font_ptr = NULL;
 
     // Check if character is valid
     if (character < 32 || character > 126){
@@ -149,17 +149,21 @@ inline oled_status oled_128x32_DrawChar(char character, uint8_t fonts){
        {
        case FONT_5x8_:
              char_cols_lenth = CHARS_COLS_LENGTH_5x8;
-             chose_font = &FONT_5x8[character - 32][columns_number];
+             chose_font_ptr = &FONT_5x8[character - 32][columns_number];
           break;
        case FONT_6x8_:
              char_cols_lenth = CHARS_COLS_LENGTH_6x8;
-             chose_font = &FONT_6x8[character - 32][columns_number];
+             chose_font_ptr = &FONT_6x8[character - 32][columns_number];
           break;
+       case FONT_8x8_:
+             char_cols_lenth = CHARS_COLS_LENGTH_8x8;
+             chose_font_ptr = &FONT_8x8[character - 32][columns_number];
+          break;                    
          default:
          break;
       }
       while(columns_number < char_cols_lenth){
-         oled_buffer_array[array_position] = chose_font[columns_number];
+         oled_buffer_array[array_position] = chose_font_ptr[columns_number];
          columns_number++;
          array_position++;
       }
